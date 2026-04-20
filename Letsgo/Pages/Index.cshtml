@@ -4,7 +4,41 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Benvenuto su LETSGO</h1>
-    <p>Trova la tua prossima meta in un click 😉</p>
+<<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="display-4">SmartTrip</h1>
+        <p class="lead mt-3">
+            Confronta voli, meteo e suggerimenti AI per trovare la destinazione migliore.
+        </p>
+        <a asp-page="/Search" class="btn btn-primary btn-lg mt-3">Inizia una ricerca</a>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Voli</h5>
+                    <p class="card-text">Ricerca le migliori opzioni disponibili per area geografica e periodo.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Meteo</h5>
+                    <p class="card-text">Controlla le condizioni meteo delle destinazioni trovate.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">AI</h5>
+                    <p class="card-text">Ricevi un consiglio finale sintetico sulle opzioni migliori.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
