@@ -1,4 +1,63 @@
 ﻿@page
 @model Letsgo.Pages.SearchModel
 @{
+    ViewData["Title"] = "Ricerca il tuo viaggio";
+
 }
+
+<div class="container mt-4">
+    <h1 class="mb-4">Ricerca il tuo viaggio</h1>
+    <form class="row g-3" method="post">
+        <div class="col-md-4">
+            <label asp-for="AereoportoPartenza" class="form-label">Aeroporto di partenza</label>
+            <input asp-for="AereoportoPartenza" class="form-control" placeholder="Es. MXP" />
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Areaselezionata" class="form-label">Area geografica</label>
+            <select asp-for="Areaselezionata" class="form-select">
+                <option value="">-- Seleziona --</option>
+                <option>Europa</option>
+                <option>Asia</option>
+                <option>America</option>
+                <option>Africa</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="DataPartenza" class="form-label">Data andata</label>
+            <input asp-for="DataPartenza" type="date" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label asp-for="DataRitorno" class="form-label">Data ritorno</label>
+            <input asp-for="DataRitorno" type="date" class="form-control" />
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Cerca</button>
+        </div>
+    </form>
+    @if (!string.IsNullOrEmpty(Model.Messaggio))
+    {
+        <div class="alert alert-info mt-4">
+            @Model.Messaggio
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.MessaggioErrore))
+    {
+        <div class="alert alert-info mt-4">
+            @Model.MessaggioErrore
+        </div>
+    }
+    @if (Model.MeteoCorrente != null)
+    {
+        <div class="card mt-4 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">Meteo attuale - @Model.MeteoCorrente.Name</h4>
+                <p class="card-text">
+                    <strong>Temperatura:</strong> @Model.MeteoCorrente.Main?.Temp °C
+                </p>
+                <p class="card-text">
+                    <strong>Condizioni:</strong> @Model.MeteoCorrente.Weather?.FirstOrDefault()?.Description
+                </p>
+            </div>
+        </div>
+    }
+</div>

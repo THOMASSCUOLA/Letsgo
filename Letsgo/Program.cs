@@ -1,7 +1,8 @@
 using Letsgo.Data;
+using Letsgo.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+using Letsgo.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,7 +14,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
-
+builder.Services.AddHttpClient<ServizioMeteo>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
