@@ -9,12 +9,12 @@
     <h1 class="mb-4">Ricerca il tuo viaggio</h1>
     <form class="row g-3" method="post">
         <div class="col-md-4">
-            <label asp-for="AereoportoPartenza" class="form-label">Aeroporto di partenza</label>
-            <input asp-for="AereoportoPartenza" class="form-control" placeholder="Es. MXP" />
+            <label asp-for="AeroportoPartenza" class="form-label">Aeroporto di partenza</label>
+            <input asp-for="AeroportoPartenza" class="form-control" placeholder="Es. MXP" />
         </div>
         <div class="col-md-4">
-            <label asp-for="Areaselezionata" class="form-label">Area geografica</label>
-            <select asp-for="Areaselezionata" class="form-select">
+            <label asp-for="AreaSelezionata" class="form-label">Area geografica</label>
+            <select asp-for="AreaSelezionata" class="form-select">
                 <option value="">-- Seleziona --</option>
                 <option>Europa</option>
                 <option>Asia</option>
@@ -58,6 +58,49 @@
                     <strong>Condizioni:</strong> @Model.MeteoCorrente.Weather?.FirstOrDefault()?.Description
                 </p>
             </div>
+        </div>
+    }
+    @if (Model.RisultatoVoli?.MiglioriVoli != null && Model.RisultatoVoli.MiglioriVoli.Any())
+    {
+        <div class="mt-4">
+            <h3>Migliori voli trovati</h3>
+
+            @foreach (var volo in Model.RisultatoVoli.MiglioriVoli.Take(3))
+            {
+                var primaTratta = volo.Tratte?.FirstOrDefault();
+                var ultimaTratta = volo.Tratte?.LastOrDefault();
+                var numeroScali = (volo.Tratte != null && volo.Tratte.Count > 1) ? volo.Tratte.Count - 1 : 0;
+
+                <div class="card mt-3 shadow-sm">
+                    <div class="card-body">
+                        <p>
+                            <strong>Prezzo:</strong>
+                            @(volo.Prezzo.HasValue ? volo.Prezzo + " €" : "Non disponibile")
+                        </p>
+
+                        <p>
+                            <strong>Durata totale:</strong>
+                            @(volo.DurataTotaleMinuti.HasValue ? volo.DurataTotaleMinuti + " minuti" : "Non disponibile")
+                        </p>
+
+                        @if (primaTratta != null && ultimaTratta != null)
+                        {
+                            <p><strong>Compagnia:</strong> @primaTratta.Compagnia</p>
+                            <p><strong>Partenza:</strong> @primaTratta.AeroportoPartenza?.Nome (@primaTratta.AeroportoPartenza?.Codice)</p>
+                            <p><strong>Destinazione finale:</strong> @ultimaTratta.AeroportoArrivo?.Nome (@ultimaTratta.AeroportoArrivo?.Codice)</p>
+
+                            @if (numeroScali == 0)
+                            {
+                                <p><strong>Scali:</strong> Nessuno</p>
+                            }
+                            else
+                            {
+                                <p><strong>Scali:</strong> @numeroScali</p>
+                            }
+                        }
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>

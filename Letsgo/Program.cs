@@ -14,7 +14,14 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
+
+
+
+
+builder.Services.AddHttpClient<ServizioVoli>();
 builder.Services.AddHttpClient<ServizioMeteo>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

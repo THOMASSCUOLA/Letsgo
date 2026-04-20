@@ -9,16 +9,18 @@ namespace Letsgo.Pages
 
     {
         private readonly ServizioMeteo _servizioMeteo;
+        private readonly ServizioVoli _servizioVoli;
 
-        public SearchModel(ServizioMeteo servizioMeteo)
+        public SearchModel(ServizioMeteo servizioMeteo, ServizioVoli servizioVoli)
         {
             _servizioMeteo = servizioMeteo;
+            _servizioVoli = servizioVoli;
         }
         [BindProperty]
-        public string? AereoportoPartenza { get; set; }
+        public string? AeroportoPartenza { get; set; }
 
         [BindProperty]
-        public string? Areaselezionata { get; set; }
+        public string? AreaSelezionata { get; set; }
 
         [BindProperty]
         public DateTime? DataPartenza { get; set; }
@@ -27,52 +29,81 @@ namespace Letsgo.Pages
         public DateTime? DataRitorno { get; set; }
 
         public string? Messaggio { get; set; }
-
         public string? MessaggioErrore { get; set; }
 
         public string? CittaDiTest { get; set; }
+        public string? AeroportoArrivoTest { get; set; }
 
         public RisultatoMeteo? MeteoCorrente { get; set; }
+        public RisultatoVoli? RisultatoVoli { get; set; }
         public void OnGet()
         {
         }
         public async Task OnPostAsync()
         {
-            if (string.IsNullOrWhiteSpace(Areaselezionata))
+            if (string.IsNullOrWhiteSpace(AeroportoPartenza))
+            {
+                MessaggioErrore = "Inserisci un aeroporto di partenza.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(AreaSelezionata))
             {
                 MessaggioErrore = "Seleziona un'area geografica.";
                 return;
             }
 
-            CittaDiTest = OttieniCittaDiTestDaArea(Areaselezionata);
+            if (!DataPartenza.HasValue)
+            {
+                MessaggioErrore = "Inserisci la data di andata.";
+                return;
+            }
 
-            if (string.IsNullOrWhiteSpace(CittaDiTest))
+            var destinazioneTest = OttieniDestinazioneDiTestDaArea(AreaSelezionata);
+
+            if (destinazioneTest == null)
             {
                 MessaggioErrore = "Area geografica non valida.";
                 return;
             }
 
-            MeteoCorrente = await _servizioMeteo.OttieniMeteoAsync(CittaDiTest);
+            CittaDiTest = destinazioneTest.Citta;
+            AeroportoArrivoTest = destinazioneTest.Aeroporto;
 
-            if (MeteoCorrente == null)
+            try
             {
-                MessaggioErrore = "Non sono riuscito a recuperare il meteo.";
-                return;
-            }
+                MeteoCorrente = await _servizioMeteo.OttieniMeteoAsync(CittaDiTest);
 
-            Messaggio = $"Per l'area {Areaselezionata} sto usando {CittaDiTest} come città di test.";
+                RisultatoVoli = await _servizioVoli.OttieniVoliAsync(
+                    AeroportoPartenza.ToUpper(),
+                    AeroportoArrivoTest,
+                    DataPartenza.Value,
+                    DataRitorno);
+
+                Messaggio = $"Per l'area {AreaSelezionata} sto usando {CittaDiTest} ({AeroportoArrivoTest}) come destinazione di test.";
+            }
+            catch (Exception ex)
+            {
+                MessaggioErrore = ex.Message;
+            }
         }
 
-        private string? OttieniCittaDiTestDaArea(string area)
+        private DestinazioneTest? OttieniDestinazioneDiTestDaArea(string area)
         {
             return area switch
             {
-                "Europa" => "Rome",
-                "Asia" => "Tokyo",
-                "America" => "New York",
-                "Africa" => "Il Cairo",
+                "Europa" => new DestinazioneTest { Citta = "Roma", Aeroporto = "FCO" },
+                "Asia" => new DestinazioneTest { Citta = "Tokyo", Aeroporto = "HND" },
+                "America" => new DestinazioneTest { Citta = "New York", Aeroporto = "JFK" },
+                "Africa" => new DestinazioneTest { Citta = "Il Cairo", Aeroporto = "CAI" },
                 _ => null
             };
+        }
+
+        private class DestinazioneTest
+        {
+            public string Citta { get; set; } = "";
+            public string Aeroporto { get; set; } = "";
         }
     }
 }
