@@ -1,0 +1,58 @@
+﻿@page
+@model Letsgo.Pages.Admin.PreferitiGlobaliModel
+@{
+    ViewData["Title"] = "Preferiti globali";
+}
+
+<div class="container mt-4">
+    <h1>Preferiti di tutti gli utenti</h1>
+
+    @if (Model.Destinazioni.Count == 0)
+    {
+        <p class="mt-3">Non ci sono ancora destinazioni salvate.</p>
+    }
+    else
+    {
+        <div class="row mt-3">
+            @foreach (var destinazione in Model.Destinazioni)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@destinazione.CittaDestinazione (@destinazione.AeroportoDestinazione)</h5>
+                            <p class="card-text"><strong>Utente:</strong> @destinazione.IdUtente</p>
+                            <p><strong>Email:</strong> @destinazione.EmailUtente</p>
+                            <p class="card-text"><strong>Area:</strong> @destinazione.AreaGeografica</p>
+                            <p class="card-text"><strong>Partenza:</strong> @destinazione.AeroportoPartenza</p>
+                            <p class="card-text"><strong>Data partenza:</strong> @destinazione.DataPartenza.ToString("dd/MM/yyyy")</p>
+
+                            @if (destinazione.DataRitorno.HasValue)
+                            {
+                                <p class="card-text"><strong>Data ritorno:</strong> @destinazione.DataRitorno.Value.ToString("dd/MM/yyyy")</p>
+                            }
+
+                            @if (destinazione.Prezzo.HasValue)
+                            {
+                                <p class="card-text"><strong>Prezzo:</strong> @destinazione.Prezzo €</p>
+                            }
+
+                            @if (destinazione.Temperatura.HasValue)
+                            {
+                                <p class="card-text"><strong>Temperatura:</strong> @destinazione.Temperatura °C</p>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(destinazione.DescrizioneMeteo))
+                            {
+                                <p class="card-text"><strong>Meteo:</strong> @destinazione.DescrizioneMeteo</p>
+                            }
+
+                            <p class="card-text text-muted">
+                                <small>Salvata il @destinazione.DataSalvataggio.ToString("dd/MM/yyyy HH:mm")</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

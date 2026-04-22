@@ -47,6 +47,7 @@ namespace Letsgo.Pages
         public RisultatoMeteo? MeteoCorrente { get; set; }
         public RisultatoVoli? RisultatoVoli { get; set; }
         public string? MessaggioSuccesso { get; set; }
+       
         public void OnGet()
         {
         }
@@ -107,6 +108,7 @@ namespace Letsgo.Pages
      string aeroportoArrivoTest,
      int? prezzoDaSalvare,
      double? temperaturaDaSalvare,
+     
      string? descrizioneMeteoDaSalvare)
         {
             if (!User.Identity!.IsAuthenticated)
@@ -143,7 +145,8 @@ namespace Letsgo.Pages
                 DataRitorno = dataRitorno,
                 Prezzo = prezzoDaSalvare,
                 Temperatura = temperaturaDaSalvare,
-                DescrizioneMeteo = descrizioneMeteoDaSalvare
+                DescrizioneMeteo = descrizioneMeteoDaSalvare,
+                EmailUtente = User.Identity?.Name
             };
 
             _context.DestinazioneSalvata.Add(destinazione);

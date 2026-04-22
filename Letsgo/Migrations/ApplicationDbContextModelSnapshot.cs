@@ -4,19 +4,16 @@ using Letsgo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Letsgo.Data.Migrations
+namespace Letsgo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260419194201_InitialIdentity")]
-    partial class InitialIdentity
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,6 +21,60 @@ namespace Letsgo.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Letsgo.Models.DestinazioneSalvata", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AeroportoDestinazione")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AeroportoPartenza")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AreaGeografica")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CittaDestinazione")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DataPartenza")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataRitorno")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataSalvataggio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DescrizioneMeteo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailUtente")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdUtente")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Prezzo")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Temperatura")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DestinazioneSalvata");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {

@@ -32,5 +32,6 @@ namespace Letsgo.Models
         public string? DescrizioneMeteo { get; set; }
 
         public DateTime DataSalvataggio { get; set; } = DateTime.Now;
+        public string? EmailUtente { get; set; }
     }
 }

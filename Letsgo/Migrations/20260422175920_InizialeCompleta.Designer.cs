@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Letsgo.Data.Migrations
+namespace Letsgo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260422171519_RinominaDataPartenza")]
-    partial class RinominaDataPartenza
+    [Migration("20260422175920_InizialeCompleta")]
+    partial class InizialeCompleta
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,9 @@ namespace Letsgo.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DescrizioneMeteo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailUtente")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdUtente")

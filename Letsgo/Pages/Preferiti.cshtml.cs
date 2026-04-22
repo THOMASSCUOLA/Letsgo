@@ -6,6 +6,7 @@ using Letsgo.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Letsgo.Pages
 {
@@ -13,15 +14,19 @@ namespace Letsgo.Pages
     public class PreferitiModel : PageModel
     {
         private readonly ApplicationDbContext _context;
-
-        public PreferitiModel(ApplicationDbContext contesto)
+       
+        public PreferitiModel(ApplicationDbContext contesto, UserManager<IdentityUser> userManager)
         {
             _context = contesto;
+            
         }
         public List<DestinazioneSalvata> Destinazioni { get; set; } = new();
 
         public async Task OnGetAsync()
         {
+         
+
+            
             var idUtente = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!string.IsNullOrWhiteSpace(idUtente))
