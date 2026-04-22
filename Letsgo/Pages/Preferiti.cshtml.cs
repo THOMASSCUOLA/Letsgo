@@ -1,15 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
+using Letsgo.Data;
+using Letsgo.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Letsgo.Pages
 {
     [Authorize]
     public class PreferitiModel : PageModel
     {
-        
-        public void OnGet()
+        private readonly ApplicationDbContext _context;
+
+        public PreferitiModel(ApplicationDbContext contesto)
         {
+            _context = contesto;
+        }
+        public List<DestinazioneSalvata> Destinazioni { get; set; } = new();
+
+        public async Task OnGetAsync()
+        {
+            var idUtente = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!string.IsNullOrWhiteSpace(idUtente))
+            {
+                Destinazioni = await _context.DestinazioneSalvata
+                    .Where(d => d.IdUtente == idUtente)
+                    .OrderByDescending(d => d.DataSalvataggio)
+                    .ToListAsync();
+            }
         }
     }
 }

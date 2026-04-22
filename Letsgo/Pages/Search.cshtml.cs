@@ -1,7 +1,9 @@
+using Letsgo.Data;
 using Letsgo.Models;
 using Letsgo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace Letsgo.Pages
 {
@@ -10,11 +12,12 @@ namespace Letsgo.Pages
     {
         private readonly ServizioMeteo _servizioMeteo;
         private readonly ServizioVoli _servizioVoli;
-
-        public SearchModel(ServizioMeteo servizioMeteo, ServizioVoli servizioVoli)
+        private readonly ApplicationDbContext _context;
+        public SearchModel(ServizioMeteo servizioMeteo, ServizioVoli servizioVoli, ApplicationDbContext context)
         {
             _servizioMeteo = servizioMeteo;
             _servizioVoli = servizioVoli;
+            _context = context;
         }
         [BindProperty]
         public string? AeroportoPartenza { get; set; }
@@ -33,9 +36,17 @@ namespace Letsgo.Pages
 
         public string? CittaDiTest { get; set; }
         public string? AeroportoArrivoTest { get; set; }
+        [BindProperty]
+        public int? PrezzoDaSalvare { get; set; }
+        [BindProperty]
+        public double? TemperaturaDaSalvare { get; set; }
+
+        [BindProperty]
+        public string? DescrizioneMeteoDaSalvare { get; set; }
 
         public RisultatoMeteo? MeteoCorrente { get; set; }
         public RisultatoVoli? RisultatoVoli { get; set; }
+        public string? MessaggioSuccesso { get; set; }
         public void OnGet()
         {
         }
@@ -87,12 +98,67 @@ namespace Letsgo.Pages
                 MessaggioErrore = ex.Message;
             }
         }
+        public async Task<IActionResult> OnPostSalvaAsync(
+     string aeroportoPartenza,
+     string areaSelezionata,
+     DateTime? dataPartenza,
+     DateTime? dataRitorno,
+     string cittaDiTest,
+     string aeroportoArrivoTest,
+     int? prezzoDaSalvare,
+     double? temperaturaDaSalvare,
+     string? descrizioneMeteoDaSalvare)
+        {
+            if (!User.Identity!.IsAuthenticated)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+
+            var idUtente = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(idUtente))
+            {
+                MessaggioErrore = "Utente non valido.";
+                return Page();
+            }
+
+            if (string.IsNullOrWhiteSpace(aeroportoPartenza) ||
+                string.IsNullOrWhiteSpace(areaSelezionata) ||
+                string.IsNullOrWhiteSpace(cittaDiTest) ||
+                string.IsNullOrWhiteSpace(aeroportoArrivoTest) ||
+                !dataPartenza.HasValue)
+            {
+                MessaggioErrore = "Dati non completi per il salvataggio.";
+                return Page();
+            }
+
+            var destinazione = new DestinazioneSalvata
+            {
+                IdUtente = idUtente,
+                AeroportoPartenza = aeroportoPartenza,
+                AreaGeografica = areaSelezionata,
+                CittaDestinazione = cittaDiTest,
+                AeroportoDestinazione = aeroportoArrivoTest,
+                DataPartenza = dataPartenza.Value,
+                DataRitorno = dataRitorno,
+                Prezzo = prezzoDaSalvare,
+                Temperatura = temperaturaDaSalvare,
+                DescrizioneMeteo = descrizioneMeteoDaSalvare
+            };
+
+            _context.DestinazioneSalvata.Add(destinazione);
+            await _context.SaveChangesAsync();
+
+            TempData["MessaggioSuccesso"] = "Destinazione salvata correttamente.";
+
+            return RedirectToPage("/Preferiti");
+        }
 
         private DestinazioneTest? OttieniDestinazioneDiTestDaArea(string area)
         {
             return area switch
             {
-                "Europa" => new DestinazioneTest { Citta = "Roma", Aeroporto = "FCO" },
+                "Europa" => new DestinazioneTest { Citta = "Rome", Aeroporto = "FCO" },
                 "Asia" => new DestinazioneTest { Citta = "Tokyo", Aeroporto = "HND" },
                 "America" => new DestinazioneTest { Citta = "New York", Aeroporto = "JFK" },
                 "Africa" => new DestinazioneTest { Citta = "Il Cairo", Aeroporto = "CAI" },

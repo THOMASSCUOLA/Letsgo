@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Letsgo.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Letsgo.Data
@@ -9,5 +10,6 @@ namespace Letsgo.Data
             : base(options)
         {
         }
+        public DbSet<DestinazioneSalvata> DestinazioneSalvata { get; set; }
     }
 }

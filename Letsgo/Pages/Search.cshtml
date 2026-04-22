@@ -98,6 +98,25 @@
                                 <p><strong>Scali:</strong> @numeroScali</p>
                             }
                         }
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <form method="post" asp-page-handler="Salva" class="mt-3">
+                                <input type="hidden" name="aeroportoPartenza" value="@Model.AeroportoPartenza" />
+                                <input type="hidden" name="areaSelezionata" value="@Model.AreaSelezionata" />
+                                <input type="hidden" name="dataPartenza" value="@Model.DataPartenza?.ToString("yyyy-MM-dd")" />
+                                <input type="hidden" name="dataRitorno" value="@Model.DataRitorno?.ToString("yyyy-MM-dd")" />
+                                <input type="hidden" name="cittaDiTest" value="@Model.CittaDiTest" />
+                                <input type="hidden" name="aeroportoArrivoTest" value="@Model.AeroportoArrivoTest" />
+                                <input type="hidden" name="prezzoDaSalvare" value="@volo.Prezzo" />
+                                <input type="hidden" name="temperaturaDaSalvare" value="@Model.MeteoCorrente?.Main?.Temp" />
+                                <input type="hidden" name="descrizioneMeteoDaSalvare" value="@Model.MeteoCorrente?.Weather?.FirstOrDefault()?.Description" />
+
+                                <button type="submit" class="btn btn-success">
+                                    Salva questo volo
+                                </button>
+                            </form>
+                        }
                     </div>
                 </div>
             }

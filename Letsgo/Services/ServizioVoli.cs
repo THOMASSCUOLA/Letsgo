@@ -27,6 +27,7 @@ namespace Letsgo.Services
                       $"&departure_id={Uri.EscapeDataString(aeroportoPartenza)}" +
                       $"&arrival_id={Uri.EscapeDataString(aeroportoArrivo)}" +
                       $"&outbound_date={dataAndata:yyyy-MM-dd}" +
+                      $"&currency=EUR" +
                       $"&api_key={Uri.EscapeDataString(chiaveApi)}";
 
             if (dataRitorno.HasValue)
