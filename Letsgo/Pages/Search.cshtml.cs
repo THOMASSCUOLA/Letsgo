@@ -12,15 +12,18 @@ namespace Letsgo.Pages
         private readonly ServizioVoli _servizioVoli;
         private readonly ServizioMeteo _servizioMeteo;
         private readonly ApplicationDbContext _context;
+        private readonly ServizioGemini _servizioGemini;
 
         public SearchModel(
             ServizioVoli servizioVoli,
             ServizioMeteo servizioMeteo,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            ServizioGemini servizioGemini)
         {
             _servizioVoli = servizioVoli;
             _servizioMeteo = servizioMeteo;
             _context = context;
+            _servizioGemini = servizioGemini;
         }
 
         [BindProperty]
@@ -42,12 +45,16 @@ namespace Letsgo.Pages
 
         public List<RisultatoViaggio> RisultatiViaggio { get; set; } = new();
 
+        public string? ConsiglioGemini { get; set; }
+        public string? CittaConsigliataGemini { get; set; }
+
         public void OnGet()
         {
         }
 
         public async Task OnPostAsync()
         {
+            
             if (string.IsNullOrWhiteSpace(AeroportoPartenza))
             {
                 MessaggioErrore = "Inserisci un aeroporto di partenza.";
@@ -91,8 +98,8 @@ namespace Letsgo.Pages
 
                 if (RisultatoVoli?.AltriVoli != null)
                     voli.AddRange(RisultatoVoli.AltriVoli);
-
-                foreach (var volo in voli.Take(3))
+                var aeroportiGiaAggiunti = new HashSet<string>();
+                foreach (var volo in voli)
                 {
                     var primaTratta = volo.Tratte?.FirstOrDefault();
                     var ultimaTratta = volo.Tratte?.LastOrDefault();
@@ -101,7 +108,10 @@ namespace Letsgo.Pages
                         continue;
 
                     var aeroportoFinale = ultimaTratta.AeroportoArrivo.Codice;
+                    if (aeroportiGiaAggiunti.Contains(aeroportoFinale))
+                        continue;
 
+                    aeroportiGiaAggiunti.Add(aeroportoFinale);
                     var destinazione = destinazioniArea
                         .FirstOrDefault(d => d.Aeroporto == aeroportoFinale);
 
@@ -121,6 +131,8 @@ namespace Letsgo.Pages
                         Temperatura = meteo?.Main?.Temp,
                         DescrizioneMeteo = meteo?.Weather?.FirstOrDefault()?.Description
                     });
+                    if (RisultatiViaggio.Count == 3)
+                        break;
                 }
 
                 if (RisultatiViaggio.Count == 0)
@@ -128,15 +140,69 @@ namespace Letsgo.Pages
                     MessaggioErrore = "Non sono stati trovati voli validi per quest'area.";
                     return;
                 }
+                var testoPerGemini = CreaTestoPerGemini(RisultatiViaggio);
+
+                ConsiglioGemini = await _servizioGemini.OttieniConsiglioAsync(testoPerGemini);
+
+                CittaConsigliataGemini = TrovaCittaConsigliata(ConsiglioGemini, RisultatiViaggio);
 
                 Messaggio = $"Ho trovato {RisultatiViaggio.Count} destinazioni per l'area {AreaSelezionata}.";
+
+               
             }
             catch (Exception ex)
             {
                 MessaggioErrore = ex.Message;
             }
         }
+        private string CreaTestoPerGemini(List<RisultatoViaggio> risultati)
+        {
+            var testo = """
+    Valuta queste destinazioni di viaggio in base a prezzo, meteo e comodità.
+    Scegli UNA sola destinazione migliore.
 
+    Rispondi in italiano con questo formato:
+    CITTA: nome città
+    CONSIGLIO: breve spiegazione massimo 3 righe
+    ITINERARIO:
+    - punto 1
+    - punto 2
+    - punto 3
+
+    Destinazioni:
+    """;
+
+            foreach (var r in risultati)
+            {
+                testo += $"""
+        
+        Città: {r.Citta}
+        Aeroporto: {r.AeroportoDestinazione}
+        Prezzo: {(r.Prezzo.HasValue ? r.Prezzo + " euro" : "non disponibile")}
+        Meteo: {(r.Temperatura.HasValue ? r.Temperatura + " gradi" : "temperatura non disponibile")} - {r.DescrizioneMeteo}
+        Scali: {(r.NumeroScali == 0 ? "nessuno" : r.NumeroScali)}
+        Compagnia: {r.Compagnia}
+        """;
+            }
+
+            return testo;
+        }
+
+        private string? TrovaCittaConsigliata(string? consiglio, List<RisultatoViaggio> risultati)
+        {
+            if (string.IsNullOrWhiteSpace(consiglio))
+                return null;
+
+            foreach (var risultato in risultati)
+            {
+                if (consiglio.Contains(risultato.Citta, StringComparison.OrdinalIgnoreCase))
+                {
+                    return risultato.Citta;
+                }
+            }
+
+            return null;
+        }
         public async Task<IActionResult> OnPostSalvaAsync(
             string aeroportoPartenza,
             string areaSelezionata,

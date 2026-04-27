@@ -23,6 +23,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpClient<ServizioVoli>();
 builder.Services.AddHttpClient<ServizioMeteo>();
+builder.Services.AddHttpClient<ServizioGemini>();
 
 
 var app = builder.Build();

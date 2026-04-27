@@ -57,14 +57,32 @@
     {
         <div class="mt-4">
             <h3>Destinazioni trovate</h3>
-
+           
             @foreach (var risultato in Model.RisultatiViaggio)
             {
+                
+               
                 <div class="card mt-3 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">
                             @risultato.Citta (@risultato.AeroportoDestinazione)
                         </h5>
+                        @if (Model.CittaConsigliataGemini == risultato.Citta)
+                        {
+                            <div class="alert alert-warning">
+                                ⭐ Consigliata dall'AI
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(Model.ConsiglioGemini))
+                            {
+                                <div class="card mt-4 border-warning shadow-sm">
+                                    <div class="card-body">
+                                        <h4>Consiglio AI</h4>
+                                        <pre style="white-space: pre-wrap; font-family: inherit;">@Model.ConsiglioGemini</pre>
+                                    </div>
+                                </div>
+                            }
+                        }
+                      
 
                         <p>
                             <strong>Prezzo:</strong>
