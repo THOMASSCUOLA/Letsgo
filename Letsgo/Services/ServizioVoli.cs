@@ -6,7 +6,7 @@ namespace Letsgo.Services
     public class ServizioVoli
     {
         private readonly HttpClient _httpClient;
-        private readonly IConfiguration _configurazione;
+        private readonly IConfiguration _configurazione; // Iniezione di IConfiguration per leggere la chiave API da appsettings.json
 
         public ServizioVoli(HttpClient httpClient, IConfiguration configurazione)
         {
@@ -14,7 +14,7 @@ namespace Letsgo.Services
             _configurazione = configurazione;
         }
 
-        public async Task<RisultatoVoli?> OttieniVoliAsync(string aeroportoPartenza, string aeroportoArrivo, DateTime dataAndata, DateTime? dataRitorno)
+        public async Task<RisultatoVoli?> OttieniVoliAsync(string aeroportoPartenza, string aeroportiArrivo, DateTime dataPartenza, DateTime? dataRitorno)
         {
             var chiaveApi = _configurazione["SerpApi:ApiKey"];
 
@@ -25,9 +25,11 @@ namespace Letsgo.Services
 
             var url = $"https://serpapi.com/search.json?engine=google_flights" +
                       $"&departure_id={Uri.EscapeDataString(aeroportoPartenza)}" +
-                      $"&arrival_id={Uri.EscapeDataString(aeroportoArrivo)}" +
-                      $"&outbound_date={dataAndata:yyyy-MM-dd}" +
+                      $"&arrival_id={Uri.EscapeDataString(aeroportiArrivo)}" +
+                      $"&outbound_date={dataPartenza:yyyy-MM-dd}" +
                       $"&currency=EUR" +
+                      $"&hl=it" +
+                      $"&gl=it" +
                       $"&api_key={Uri.EscapeDataString(chiaveApi)}";
 
             if (dataRitorno.HasValue)

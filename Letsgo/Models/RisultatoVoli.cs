@@ -32,13 +32,13 @@ namespace Letsgo.Models
         public string? NumeroVolo { get; set; }
 
         [JsonPropertyName("departure_airport")]
-        public AeroportoInfo? AeroportoPartenza { get; set; }
+        public AeroportoVolo? AeroportoPartenza { get; set; }
 
         [JsonPropertyName("arrival_airport")]
-        public AeroportoInfo? AeroportoArrivo { get; set; }
+        public AeroportoVolo? AeroportoArrivo { get; set; }
     }
 
-    public class AeroportoInfo
+    public class AeroportoVolo
     {
         [JsonPropertyName("name")]
         public string? Nome { get; set; }

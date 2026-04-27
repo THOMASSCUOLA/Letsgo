@@ -1,17 +1,18 @@
 ﻿@page
 @model Letsgo.Pages.SearchModel
 @{
-    ViewData["Title"] = "Ricerca il tuo viaggio";
-
+    ViewData["Title"] = "Ricerca Viaggio";
 }
 
 <div class="container mt-4">
-    <h1 class="mb-4">Ricerca il tuo viaggio</h1>
-    <form class="row g-3" method="post">
+    <h1 class="mb-4">Ricerca viaggio</h1>
+
+    <form method="post" class="row g-3">
         <div class="col-md-4">
             <label asp-for="AeroportoPartenza" class="form-label">Aeroporto di partenza</label>
             <input asp-for="AeroportoPartenza" class="form-control" placeholder="Es. MXP" />
         </div>
+
         <div class="col-md-4">
             <label asp-for="AreaSelezionata" class="form-label">Area geografica</label>
             <select asp-for="AreaSelezionata" class="form-select">
@@ -22,82 +23,75 @@
                 <option>Africa</option>
             </select>
         </div>
+
         <div class="col-md-2">
-            <label asp-for="DataPartenza" class="form-label">Data andata</label>
+            <label asp-for="DataPartenza" class="form-label">Data partenza</label>
             <input asp-for="DataPartenza" type="date" class="form-control" />
         </div>
+
         <div class="col-md-2">
             <label asp-for="DataRitorno" class="form-label">Data ritorno</label>
             <input asp-for="DataRitorno" type="date" class="form-control" />
         </div>
+
         <div class="col-12">
             <button type="submit" class="btn btn-primary">Cerca</button>
         </div>
     </form>
-    @if (!string.IsNullOrEmpty(Model.Messaggio))
+
+    @if (!string.IsNullOrWhiteSpace(Model.MessaggioErrore))
+    {
+        <div class="alert alert-danger mt-4">
+            @Model.MessaggioErrore
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.Messaggio))
     {
         <div class="alert alert-info mt-4">
             @Model.Messaggio
         </div>
     }
-    @if (!string.IsNullOrEmpty(Model.MessaggioErrore))
-    {
-        <div class="alert alert-info mt-4">
-            @Model.MessaggioErrore
-        </div>
-    }
-    @if (Model.MeteoCorrente != null)
-    {
-        <div class="card mt-4 shadow-sm">
-            <div class="card-body">
-                <h4 class="card-title">Meteo attuale - @Model.MeteoCorrente.Name</h4>
-                <p class="card-text">
-                    <strong>Temperatura:</strong> @Model.MeteoCorrente.Main?.Temp °C
-                </p>
-                <p class="card-text">
-                    <strong>Condizioni:</strong> @Model.MeteoCorrente.Weather?.FirstOrDefault()?.Description
-                </p>
-            </div>
-        </div>
-    }
-    @if (Model.RisultatoVoli?.MiglioriVoli != null && Model.RisultatoVoli.MiglioriVoli.Any())
+
+    @if (Model.RisultatiViaggio.Any())
     {
         <div class="mt-4">
-            <h3>Migliori voli trovati</h3>
+            <h3>Destinazioni trovate</h3>
 
-            @foreach (var volo in Model.RisultatoVoli.MiglioriVoli.Take(3))
+            @foreach (var risultato in Model.RisultatiViaggio)
             {
-                var primaTratta = volo.Tratte?.FirstOrDefault();
-                var ultimaTratta = volo.Tratte?.LastOrDefault();
-                var numeroScali = (volo.Tratte != null && volo.Tratte.Count > 1) ? volo.Tratte.Count - 1 : 0;
-
                 <div class="card mt-3 shadow-sm">
                     <div class="card-body">
+                        <h5 class="card-title">
+                            @risultato.Citta (@risultato.AeroportoDestinazione)
+                        </h5>
+
                         <p>
                             <strong>Prezzo:</strong>
-                            @(volo.Prezzo.HasValue ? volo.Prezzo + " €" : "Non disponibile")
+                            @(risultato.Prezzo.HasValue ? risultato.Prezzo + " €" : "Non disponibile")
                         </p>
 
                         <p>
-                            <strong>Durata totale:</strong>
-                            @(volo.DurataTotaleMinuti.HasValue ? volo.DurataTotaleMinuti + " minuti" : "Non disponibile")
+                            <strong>Durata:</strong>
+                            @(risultato.DurataTotaleMinuti.HasValue ? risultato.DurataTotaleMinuti + " minuti" : "Non disponibile")
                         </p>
 
-                        @if (primaTratta != null && ultimaTratta != null)
-                        {
-                            <p><strong>Compagnia:</strong> @primaTratta.Compagnia</p>
-                            <p><strong>Partenza:</strong> @primaTratta.AeroportoPartenza?.Nome (@primaTratta.AeroportoPartenza?.Codice)</p>
-                            <p><strong>Destinazione finale:</strong> @ultimaTratta.AeroportoArrivo?.Nome (@ultimaTratta.AeroportoArrivo?.Codice)</p>
+                        <p>
+                            <strong>Compagnia:</strong>
+                            @(string.IsNullOrWhiteSpace(risultato.Compagnia) ? "Non disponibile" : risultato.Compagnia)
+                        </p>
 
-                            @if (numeroScali == 0)
-                            {
-                                <p><strong>Scali:</strong> Nessuno</p>
-                            }
-                            else
-                            {
-                                <p><strong>Scali:</strong> @numeroScali</p>
-                            }
-                        }
+                        <p>
+                            <strong>Scali:</strong>
+                            @(risultato.NumeroScali == 0 ? "Nessuno" : risultato.NumeroScali)
+                        </p>
+
+                        <p>
+                            <strong>Meteo:</strong>
+                            @(risultato.Temperatura.HasValue ? risultato.Temperatura + " °C" : "Temperatura non disponibile")
+                            -
+                            @(string.IsNullOrWhiteSpace(risultato.DescrizioneMeteo) ? "descrizione non disponibile" : risultato.DescrizioneMeteo)
+                        </p>
 
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
@@ -106,14 +100,14 @@
                                 <input type="hidden" name="areaSelezionata" value="@Model.AreaSelezionata" />
                                 <input type="hidden" name="dataPartenza" value="@Model.DataPartenza?.ToString("yyyy-MM-dd")" />
                                 <input type="hidden" name="dataRitorno" value="@Model.DataRitorno?.ToString("yyyy-MM-dd")" />
-                                <input type="hidden" name="cittaDiTest" value="@Model.CittaDiTest" />
-                                <input type="hidden" name="aeroportoArrivoTest" value="@Model.AeroportoArrivoTest" />
-                                <input type="hidden" name="prezzoDaSalvare" value="@volo.Prezzo" />
-                                <input type="hidden" name="temperaturaDaSalvare" value="@Model.MeteoCorrente?.Main?.Temp" />
-                                <input type="hidden" name="descrizioneMeteoDaSalvare" value="@Model.MeteoCorrente?.Weather?.FirstOrDefault()?.Description" />
+                                <input type="hidden" name="cittaDestinazione" value="@risultato.Citta" />
+                                <input type="hidden" name="aeroportoDestinazione" value="@risultato.AeroportoDestinazione" />
+                                <input type="hidden" name="prezzoDaSalvare" value="@risultato.Prezzo" />
+                                <input type="hidden" name="temperaturaDaSalvare" value="@risultato.Temperatura" />
+                                <input type="hidden" name="descrizioneMeteoDaSalvare" value="@risultato.DescrizioneMeteo" />
 
                                 <button type="submit" class="btn btn-success">
-                                    Salva questo volo
+                                    Salva questa destinazione
                                 </button>
                             </form>
                         }
