@@ -3,6 +3,83 @@
 @{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<style>
+    .privacy-hero {
+        background: linear-gradient(135deg, #0d6efd, #6ea8fe);
+        color: white;
+        border-radius: 26px;
+        padding: 36px;
+        box-shadow: 0 12px 35px rgba(13, 110, 253, 0.25);
+    }
+
+    .privacy-card {
+        background: white;
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+        margin-top: 25px;
+    }
+
+    .privacy-card h4 {
+        font-weight: 800;
+        margin-bottom: 12px;
+        color: #212529;
+    }
+
+    .privacy-card p {
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .highlight-box {
+        background: #f8f9fa;
+        border-left: 5px solid #0d6efd;
+        padding: 15px 18px;
+        border-radius: 14px;
+        margin-top: 15px;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+
+    <div class="privacy-hero mb-4">
+        <h1 class="mb-2">Privacy Policy</h1>
+        <p class="mb-0">
+            La tua privacy è importante. In questa pagina spieghiamo come vengono gestiti i tuoi dati.
+        </p>
+    </div>
+
+    <div class="privacy-card">
+        <h4>Trattamento dei dati</h4>
+        <p>
+            I dati personali inseriti all’interno dell’applicazione vengono trattati in modo corretto,
+            trasparente e nel rispetto dei principi di sicurezza.
+        </p>
+
+        <h4>Sicurezza</h4>
+        <p>
+            Il sito è ospitato su infrastruttura fornita da
+            Somee,
+            che garantisce un ambiente affidabile per la gestione e la protezione dei dati.
+        </p>
+
+        <div class="highlight-box">
+            I dati vengono utilizzati esclusivamente per il funzionamento del servizio
+            (ricerca viaggi, salvataggio preferiti e personalizzazione dell’esperienza utente).
+        </div>
+
+        <h4 class="mt-4">Utilizzo delle informazioni</h4>
+        <p>
+            Le informazioni raccolte non vengono cedute a terzi e sono utilizzate unicamente
+            per migliorare il servizio offerto all’utente.
+        </p>
+
+        <h4>Contatti</h4>
+        <p>
+            Per qualsiasi richiesta relativa alla privacy o alla gestione dei dati,
+            è possibile contattare l’amministratore del sito.
+        </p>
+    </div>
+
+</div>
