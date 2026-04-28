@@ -4,41 +4,154 @@
     ViewData["Title"] = "Home page";
 }
 
-<<div class="container mt-5">
-    <div class="text-center">
-        <h1 class="display-4">SmartTrip</h1>
+<style>
+    body {
+        background: #f4f7fb;
+    }
+
+    .home-hero {
+        background: linear-gradient(135deg, #0d6efd, #6ea8fe);
+        color: white;
+        border-radius: 28px;
+        padding: 60px 35px;
+        box-shadow: 0 14px 38px rgba(13, 110, 253, 0.25);
+    }
+
+    .home-hero h1 {
+        font-weight: 800;
+    }
+
+    .home-hero p {
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .btn-start {
+        border-radius: 16px;
+        padding: 13px 30px;
+        font-weight: 700;
+    }
+
+    .feature-wrapper {
+        position: relative;
+        margin-top: 35px;
+    }
+
+    .feature-img {
+        position: absolute;
+        top: 110px;
+        right: 40px;
+        width: 180px; /* PIÙ GRANDE */
+        height: 180px;
+        object-fit: cover;
+        border-radius: 30px;
+        opacity: 0.7; /* meno trasparente → meno effetto “sfocato” */
+        filter: brightness(0.9) contrast(1.1);
+        z-index: 1;
+        transform: rotate(8deg); /* leggero effetto figo */
+    }
+
+    .feature-card {
+        position: relative;
+        z-index: 2;
+        border: none;
+        border-radius: 24px;
+        min-height: 180px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+        transition: 0.2s ease;
+        overflow: visible; /* serve per far uscire l’immagine */
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 35px rgba(0, 0, 0, 0.13);
+    }
+
+    .feature-card .card-body {
+        padding: 28px;
+    }
+
+    .feature-card h5 {
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .feature-card p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    .small-text {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.75); /* se su sfondo scuro tipo hero */
+        letter-spacing: 0.3px;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+
+    <div class="home-hero text-center">
+        <h1 class="display-4">Leeeetsgo</h1>
         <p class="lead mt-3">
             Confronta voli, meteo e suggerimenti AI per trovare la destinazione migliore.
         </p>
-        <a asp-page="/Search" class="btn btn-primary btn-lg mt-3">Inizia una ricerca</a>
+
+        <p class="small-text mt-1">
+            Scegli la tua meta e... let's go !
+        </p>
+        <a asp-page="/Search" class="btn btn-light btn-lg mt-4 btn-start">
+            Inizia una ricerca
+        </a>
     </div>
 
-    <div class="row mt-5">
+    <div class="row mt-4 g-4">
+
         <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Voli</h5>
-                    <p class="card-text">Ricerca le migliori opzioni disponibili per area geografica e periodo.</p>
+            <div class="feature-wrapper">
+                <img src="~/img/aereodecolla.jpg" class="feature-img" alt="Immagine voli" />
+
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Voli</h5>
+                        <p class="card-text">
+                            Ricerca le migliori opzioni disponibili per area geografica e periodo.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Meteo</h5>
-                    <p class="card-text">Controlla le condizioni meteo delle destinazioni trovate.</p>
+            <div class="feature-wrapper">
+                <img src="~/img/meteo.jpg" class="feature-img" alt="Immagine meteo" />
+
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Meteo</h5>
+                        <p class="card-text">
+                            Controlla le condizioni meteo delle destinazioni trovate.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">AI</h5>
-                    <p class="card-text">Ricevi un consiglio finale sintetico sulle opzioni migliori.</p>
+            <div class="feature-wrapper">
+                <img src="~/img/ai.jpg" class="feature-img" alt="Immagine AI" />
+
+                <div class="card feature-card">
+                    <div class="card-body">
+                        <h5 class="card-title">AI</h5>
+                        <p class="card-text">
+                            Ricevi un consiglio finale sintetico sulle opzioni migliori.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>

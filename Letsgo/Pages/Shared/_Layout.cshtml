@@ -1,62 +1,132 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Letsgo</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Letsgo.styles.css" asp-append-version="true" />
+
+    <style>
+        body {
+            background: #f4f7fb;
+            min-height: 100vh;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.35rem;
+            color: #0d6efd !important;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 8px 14px !important;
+            margin: 0 2px;
+            transition: 0.2s ease;
+        }
+
+            .nav-link:hover {
+                background: #eef5ff;
+                color: #0d6efd !important;
+            }
+
+        .main-wrapper {
+            min-height: calc(100vh - 150px);
+        }
+
+        .footer-custom {
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 18px 0;
+            margin-top: 40px;
+            font-size: 0.9rem;
+        }
+
+            .footer-custom a {
+                color: #0d6efd;
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+                .footer-custom a:hover {
+                    text-decoration: underline;
+                }
+    </style>
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light navbar-custom mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Letsgo</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">
+                    ✈ Letsgo
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Apri menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 gap-sm-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Search">Ricerca</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Preferiti">Preferiti</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Admin/PreferitiGlobali">Admin</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Admin/PreferitiGlobali">
+                                    Admin
+                                </a>
                             </li>
                         }
-                       
                     </ul>
+
                     <partial name="_LoginPartial" />
                 </div>
-                
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container main-wrapper">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Letsgo - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    <footer class="footer-custom text-muted">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div>
+                &copy; 2026 - Letsgo
+            </div>
+
+            <div>
+                <a asp-area="" asp-page="/Privacy">Privacy</a>
+            </div>
         </div>
     </footer>
 
