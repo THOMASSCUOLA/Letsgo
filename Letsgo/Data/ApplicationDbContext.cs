@@ -10,6 +10,6 @@ namespace Letsgo.Data
             : base(options)
         {
         }
-        public DbSet<DestinazioneSalvata> DestinazioneSalvata { get; set; }
+        public DbSet<DestinazioneSalvata> DestinazioniSalvate { get; set; }
     }
 }

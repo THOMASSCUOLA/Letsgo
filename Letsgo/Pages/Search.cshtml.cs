@@ -41,12 +41,12 @@ namespace Letsgo.Pages
         public string? Messaggio { get; set; }
         public string? MessaggioErrore { get; set; }
 
-        public RisultatoVoli? RisultatoVoli { get; set; }
+
 
         public List<RisultatoViaggio> RisultatiViaggio { get; set; } = new();
 
         public string? ConsiglioGemini { get; set; }
-        public string? CittaConsigliataGemini { get; set; }
+
 
         public void OnGet()
         {
@@ -54,7 +54,7 @@ namespace Letsgo.Pages
 
         public async Task OnPostAsync()
         {
-            
+
             if (string.IsNullOrWhiteSpace(AeroportoPartenza))
             {
                 MessaggioErrore = "Inserisci un aeroporto di partenza.";
@@ -85,8 +85,8 @@ namespace Letsgo.Pages
 
             try
             {
-                RisultatoVoli = await _servizioVoli.OttieniVoliAsync(
-                    AeroportoPartenza.ToUpper(),
+                var RisultatoVoli = await _servizioVoli.OttieniVoliAsync(
+                     AeroportoPartenza.ToUpper(),
                     aeroportiArrivo,
                     DataPartenza.Value,
                     DataRitorno);
@@ -131,7 +131,7 @@ namespace Letsgo.Pages
                         Temperatura = meteo?.Main?.Temp,
                         DescrizioneMeteo = meteo?.Weather?.FirstOrDefault()?.Description
                     });
-                    if (RisultatiViaggio.Count == 3)
+                    if (RisultatiViaggio.Count == 5)
                         break;
                 }
 
@@ -143,12 +143,20 @@ namespace Letsgo.Pages
                 var testoPerGemini = CreaTestoPerGemini(RisultatiViaggio);
 
                 ConsiglioGemini = await _servizioGemini.OttieniConsiglioAsync(testoPerGemini);
+                var CittaConsigliataGemini = TrovaCittaConsigliata(ConsiglioGemini, RisultatiViaggio);
 
-                CittaConsigliataGemini = TrovaCittaConsigliata(ConsiglioGemini, RisultatiViaggio);
+                if (!string.IsNullOrWhiteSpace(CittaConsigliataGemini))
+                {
+                    foreach (var risultato in RisultatiViaggio)
+                    {
+                        risultato.ConsigliatoDaGemini =
+                            risultato.Citta.Equals(CittaConsigliataGemini, StringComparison.OrdinalIgnoreCase);
+                    }
+                }
 
                 Messaggio = $"Ho trovato {RisultatiViaggio.Count} destinazioni per l'area {AreaSelezionata}.";
 
-               
+
             }
             catch (Exception ex)
             {
@@ -252,7 +260,7 @@ namespace Letsgo.Pages
                 DescrizioneMeteo = descrizioneMeteoDaSalvare
             };
 
-            _context.DestinazioneSalvata.Add(destinazione);
+            _context.DestinazioniSalvate.Add(destinazione);
             await _context.SaveChangesAsync();
 
             TempData["MessaggioSuccesso"] = "Destinazione salvata correttamente.";
@@ -265,32 +273,40 @@ namespace Letsgo.Pages
             return area switch
             {
                 "Europa" => new List<DestinazioneArea>
-                {
-                    new DestinazioneArea { Citta = "Roma", Aeroporto = "FCO" },
-                    new DestinazioneArea { Citta = "Madrid", Aeroporto = "MAD" },
-                    new DestinazioneArea { Citta = "Lisbona", Aeroporto = "LIS" }
-                },
+{
+    new DestinazioneArea { Citta = "Roma", Aeroporto = "FCO" },
+    new DestinazioneArea { Citta = "Madrid", Aeroporto = "MAD" },
+    new DestinazioneArea { Citta = "Lisbona", Aeroporto = "LIS" },
+    new DestinazioneArea { Citta = "Parigi", Aeroporto = "CDG" },
+    new DestinazioneArea { Citta = "Londra", Aeroporto = "LHR" }
+},
 
                 "Asia" => new List<DestinazioneArea>
-                {
-                    new DestinazioneArea { Citta = "Tokyo", Aeroporto = "HND" },
-                    new DestinazioneArea { Citta = "Bangkok", Aeroporto = "BKK" },
-                    new DestinazioneArea { Citta = "Dubai", Aeroporto = "DXB" }
-                },
+{
+    new DestinazioneArea { Citta = "Tokyo", Aeroporto = "HND" },
+    new DestinazioneArea { Citta = "Bangkok", Aeroporto = "BKK" },
+    new DestinazioneArea { Citta = "Dubai", Aeroporto = "DXB" },
+    new DestinazioneArea { Citta = "Singapore", Aeroporto = "SIN" },
+    new DestinazioneArea { Citta = "Seoul", Aeroporto = "ICN" }
+},
 
                 "America" => new List<DestinazioneArea>
-                {
-                    new DestinazioneArea { Citta = "New York", Aeroporto = "JFK" },
-                    new DestinazioneArea { Citta = "Miami", Aeroporto = "MIA" },
-                    new DestinazioneArea { Citta = "Los Angeles", Aeroporto = "LAX" }
-                },
+{
+    new DestinazioneArea { Citta = "New York", Aeroporto = "JFK" },
+    new DestinazioneArea { Citta = "Miami", Aeroporto = "MIA" },
+    new DestinazioneArea { Citta = "Los Angeles", Aeroporto = "LAX" },
+    new DestinazioneArea { Citta = "Toronto", Aeroporto = "YYZ" },
+    new DestinazioneArea { Citta = "San Paolo", Aeroporto = "GRU" }
+},
 
                 "Africa" => new List<DestinazioneArea>
-                {
-                    new DestinazioneArea { Citta = "Il Cairo", Aeroporto = "CAI" },
-                    new DestinazioneArea { Citta = "Marrakech", Aeroporto = "RAK" },
-                    new DestinazioneArea { Citta = "Tunisi", Aeroporto = "TUN" }
-                },
+{
+    new DestinazioneArea { Citta = "Il Cairo", Aeroporto = "CAI" },
+    new DestinazioneArea { Citta = "Marrakech", Aeroporto = "RAK" },
+    new DestinazioneArea { Citta = "Tunisi", Aeroporto = "TUN" },
+    new DestinazioneArea { Citta = "Città del Capo", Aeroporto = "CPT" },
+    new DestinazioneArea { Citta = "Nairobi", Aeroporto = "NBO" }
+},
 
                 _ => new List<DestinazioneArea>()
             };
@@ -306,6 +322,8 @@ namespace Letsgo.Pages
             public int NumeroScali { get; set; }
             public double? Temperatura { get; set; }
             public string? DescrizioneMeteo { get; set; }
+
+            public bool ConsigliatoDaGemini { get; set; }
         }
 
         private class DestinazioneArea

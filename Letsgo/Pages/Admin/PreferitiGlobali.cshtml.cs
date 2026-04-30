@@ -18,7 +18,7 @@ namespace Letsgo.Pages.Admin
         public List<DestinazioneSalvata> Destinazioni { get; set; } = new();
         public async Task OnGetAsync()
         {
-            Destinazioni = await _context.DestinazioneSalvata.OrderByDescending(a => a.DataSalvataggio).ToListAsync();
+            Destinazioni = await _context.DestinazioniSalvate.OrderByDescending(a => a.DataSalvataggio).ToListAsync();
         }
     }
 }

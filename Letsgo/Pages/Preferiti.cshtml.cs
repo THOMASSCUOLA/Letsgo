@@ -31,7 +31,7 @@ namespace Letsgo.Pages
 
             if (!string.IsNullOrWhiteSpace(idUtente))
             {
-                Destinazioni = await _context.DestinazioneSalvata
+                Destinazioni = await _context.DestinazioniSalvate
                     .Where(d => d.IdUtente == idUtente)
                     .OrderByDescending(d => d.DataSalvataggio)
                     .ToListAsync();
