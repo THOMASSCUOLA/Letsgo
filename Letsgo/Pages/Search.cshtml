@@ -100,11 +100,11 @@
 
     <div class="card box mb-4">
         <div class="card-body p-4">
-            <form method="post" class="row g-3">
+            <form method="post" class="row g-3" id="formRicerca">
 
                 <div class="col-md-4">
                     <label asp-for="AeroportoPartenza" class="form-label">Aeroporto di partenza</label>
-                    <input asp-for="AeroportoPartenza" class="form-control" placeholder="Es. MXP si accettano solo sigle di 3 lettere" />
+                    <input asp-for="AeroportoPartenza" class="form-control" placeholder="Es. MXP (si accettano solo sigle di 3 lettere)" />
                 </div>
 
                 <div class="col-md-4">
@@ -115,6 +115,7 @@
                         <option>Asia</option>
                         <option>America</option>
                         <option>Africa</option>
+                        <option>Oceania</option>
                     </select>
                 </div>
 
@@ -129,10 +130,16 @@
                 </div>
 
                 <div class="col-12 mt-3">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="btnCerca">
                         Cerca viaggio
                     </button>
                 </div>
+
+                <!-- Bottone con la rotella (nascosto all'inizio) -->
+                <button id="btnCaricamento" class="btn btn-primary w-100" type="button" disabled style="display: none;">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Ricerca in corso, attendi...
+                </button>
 
             </form>
         </div>
@@ -209,7 +216,9 @@
                                         <div class="info">
                                             <small>Durata</small>
                                             <div>
-                                                @(risultato.DurataTotaleMinuti.HasValue ? risultato.DurataTotaleMinuti + " minuti" : "Non disponibile")
+                                                @(risultato.DurataTotaleMinuti.HasValue ? risultato.DurataTotaleMinuti + " minuti equivalenti a " : "Non disponibile")
+                                                
+                                                @(risultato.DurataInOre.HasValue ? risultato.DurataInOre.Value.ToString("0.##") + " Ore" : "Ore non disponibili")
                                             </div>
                                         </div>
                                     </div>
@@ -236,7 +245,7 @@
                                         <div class="info">
                                             <small>Meteo</small>
                                             <div>
-                                                @(risultato.Temperatura.HasValue ? risultato.Temperatura + " °C" : "Temperatura non disponibile")
+                                                @(risultato.Temperatura.HasValue ? risultato.Temperatura + " °C in questo momento " : "Temperatura non disponibile")
                                                 -
                                                 @(string.IsNullOrWhiteSpace(risultato.DescrizioneMeteo) ? "descrizione non disponibile" : risultato.DescrizioneMeteo)
                                             </div>
@@ -256,6 +265,7 @@
                                         <input type="hidden" name="prezzoDaSalvare" value="@risultato.Prezzo" />
                                         <input type="hidden" name="temperaturaDaSalvare" value="@risultato.Temperatura" />
                                         <input type="hidden" name="descrizioneMeteoDaSalvare" value="@risultato.DescrizioneMeteo" />
+                                        <input type="hidden" name="durataTotaleMinutiDaSalvare" value="@risultato.DurataTotaleMinuti" />
 
                                         <button type="submit" class="btn btn-success">
                                             Salva questa destinazione
@@ -271,3 +281,16 @@
         </div>
     }
 </div>
+@section Scripts {
+    <script>
+        // Quando il form viene inviato...
+        document.getElementById('formRicerca').addEventListener('submit', function () {
+
+            // 1. Nascondi il bottone originale
+            document.getElementById('btnCerca').style.display = 'none';
+
+            // 2. Mostra il bottone con la rotella che gira
+            document.getElementById('btnCaricamento').style.display = 'block';
+        });
+    </script>
+}

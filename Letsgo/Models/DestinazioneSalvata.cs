@@ -27,6 +27,9 @@ namespace Letsgo.Models
 
         public int? Prezzo { get; set; }
 
+        public int? DurataTotaleMinuti { get; set; }
+        public double ? DurataInOre => DurataTotaleMinuti.HasValue ? (double?)DurataTotaleMinuti.Value / 60 : null;
+
         public double? Temperatura { get; set; }
 
         public string? DescrizioneMeteo { get; set; }

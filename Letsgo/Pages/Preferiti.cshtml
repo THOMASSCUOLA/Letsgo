@@ -170,6 +170,18 @@
                                         </div>
                                     </div>
                                 }
+                                @if(destinazione.DurataInOre.HasValue)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="info-box">
+                                            <span class="info-label">Durata</span>
+                                            <span class="info-value">@destinazione.DurataInOre?.ToString("0.##") ore</span>
+                                        </div>
+                                    </div>
+                                    
+                                }
+
+                                    
 
                                 @if (!string.IsNullOrWhiteSpace(destinazione.DescrizioneMeteo))
                                 {

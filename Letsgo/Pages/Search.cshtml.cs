@@ -13,17 +13,20 @@ namespace Letsgo.Pages
         private readonly ServizioMeteo _servizioMeteo;
         private readonly ApplicationDbContext _context;
         private readonly ServizioGemini _servizioGemini;
+        private readonly ServizioDestinazioni _servizioDestinazioni ;
 
         public SearchModel(
             ServizioVoli servizioVoli,
             ServizioMeteo servizioMeteo,
             ApplicationDbContext context,
-            ServizioGemini servizioGemini)
+            ServizioGemini servizioGemini,
+            ServizioDestinazioni servizioDestinazioni)
         {
             _servizioVoli = servizioVoli;
             _servizioMeteo = servizioMeteo;
             _context = context;
             _servizioGemini = servizioGemini;
+            _servizioDestinazioni = servizioDestinazioni;
         }
 
         [BindProperty]
@@ -48,9 +51,7 @@ namespace Letsgo.Pages
         public string? ConsiglioGemini { get; set; }
 
 
-        public void OnGet()
-        {
-        }
+      
 
         public async Task OnPostAsync()
         {
@@ -73,8 +74,11 @@ namespace Letsgo.Pages
                 return;
             }
 
-            var destinazioniArea = OttieniDestinazioniDaArea(AreaSelezionata);
-
+           
+            var destinazioniArea = await _servizioDestinazioni.OttieniDestinazioniDaAreaAsync(AreaSelezionata);
+            // Mescola le città in modo casuale e tienine al massimo 5 per non bloccare l'API
+            var random = new Random();
+            destinazioniArea = destinazioniArea.OrderBy(d => random.Next()).Take(5).ToList();
             if (destinazioniArea.Count == 0)
             {
                 MessaggioErrore = "Area geografica non valida.";
@@ -94,10 +98,12 @@ namespace Letsgo.Pages
                 var voli = new List<VoloSerpApi>();
 
                 if (RisultatoVoli?.MiglioriVoli != null)
-                    voli.AddRange(RisultatoVoli.MiglioriVoli);
+                    voli.AddRange(RisultatoVoli.MiglioriVoli); // Aggiungiamo i migliori voli alla lista dei voli da processare 
 
                 if (RisultatoVoli?.AltriVoli != null)
                     voli.AddRange(RisultatoVoli.AltriVoli);
+
+
                 var aeroportiGiaAggiunti = new HashSet<string>();
                 foreach (var volo in voli)
                 {
@@ -126,13 +132,13 @@ namespace Letsgo.Pages
                         AeroportoDestinazione = destinazione.Aeroporto,
                         Prezzo = volo.Prezzo,
                         DurataTotaleMinuti = volo.DurataTotaleMinuti,
+                        
                         Compagnia = primaTratta?.Compagnia,
                         NumeroScali = volo.Tratte != null && volo.Tratte.Count > 1 ? volo.Tratte.Count - 1 : 0,
                         Temperatura = meteo?.Main?.Temp,
                         DescrizioneMeteo = meteo?.Weather?.FirstOrDefault()?.Description
                     });
-                    if (RisultatiViaggio.Count == 5)
-                        break;
+                   
                 }
 
                 if (RisultatiViaggio.Count == 0)
@@ -220,7 +226,9 @@ namespace Letsgo.Pages
             string aeroportoDestinazione,
             int? prezzoDaSalvare,
             double? temperaturaDaSalvare,
-            string? descrizioneMeteoDaSalvare)
+            string? descrizioneMeteoDaSalvare,
+            int? durataTotaleMinutiDaSalvare
+            )
         {
             if (!User.Identity!.IsAuthenticated)
             {
@@ -257,79 +265,23 @@ namespace Letsgo.Pages
                 DataRitorno = dataRitorno,
                 Prezzo = prezzoDaSalvare,
                 Temperatura = temperaturaDaSalvare,
-                DescrizioneMeteo = descrizioneMeteoDaSalvare
+                DescrizioneMeteo = descrizioneMeteoDaSalvare,
+                DurataTotaleMinuti = durataTotaleMinutiDaSalvare
             };
 
             _context.DestinazioniSalvate.Add(destinazione);
             await _context.SaveChangesAsync();
 
-            TempData["MessaggioSuccesso"] = "Destinazione salvata correttamente.";
+            TempData["MessaggioSuccesso"] = "Destinazione salvata correttamente."; //tempdata serve per passare dati tra richieste HTTP, in questo caso per mostrare un messaggio di successo dopo il redirect
 
             return RedirectToPage("/Preferiti");
         }
 
-        private List<DestinazioneArea> OttieniDestinazioniDaArea(string area)
-        {
-            return area switch
-            {
-                "Europa" => new List<DestinazioneArea>
-{
-    new DestinazioneArea { Citta = "Roma", Aeroporto = "FCO" },
-    new DestinazioneArea { Citta = "Madrid", Aeroporto = "MAD" },
-    new DestinazioneArea { Citta = "Lisbona", Aeroporto = "LIS" },
-    new DestinazioneArea { Citta = "Parigi", Aeroporto = "CDG" },
-    new DestinazioneArea { Citta = "Londra", Aeroporto = "LHR" }
-},
+       
+     
 
-                "Asia" => new List<DestinazioneArea>
-{
-    new DestinazioneArea { Citta = "Tokyo", Aeroporto = "HND" },
-    new DestinazioneArea { Citta = "Bangkok", Aeroporto = "BKK" },
-    new DestinazioneArea { Citta = "Dubai", Aeroporto = "DXB" },
-    new DestinazioneArea { Citta = "Singapore", Aeroporto = "SIN" },
-    new DestinazioneArea { Citta = "Seoul", Aeroporto = "ICN" }
-},
+       
 
-                "America" => new List<DestinazioneArea>
-{
-    new DestinazioneArea { Citta = "New York", Aeroporto = "JFK" },
-    new DestinazioneArea { Citta = "Miami", Aeroporto = "MIA" },
-    new DestinazioneArea { Citta = "Los Angeles", Aeroporto = "LAX" },
-    new DestinazioneArea { Citta = "Toronto", Aeroporto = "YYZ" },
-    new DestinazioneArea { Citta = "San Paolo", Aeroporto = "GRU" }
-},
-
-                "Africa" => new List<DestinazioneArea>
-{
-    new DestinazioneArea { Citta = "Il Cairo", Aeroporto = "CAI" },
-    new DestinazioneArea { Citta = "Marrakech", Aeroporto = "RAK" },
-    new DestinazioneArea { Citta = "Tunisi", Aeroporto = "TUN" },
-    new DestinazioneArea { Citta = "Città del Capo", Aeroporto = "CPT" },
-    new DestinazioneArea { Citta = "Nairobi", Aeroporto = "NBO" }
-},
-
-                _ => new List<DestinazioneArea>()
-            };
-        }
-
-        public class RisultatoViaggio
-        {
-            public string Citta { get; set; } = "";
-            public string AeroportoDestinazione { get; set; } = "";
-            public int? Prezzo { get; set; }
-            public int? DurataTotaleMinuti { get; set; }
-            public string? Compagnia { get; set; }
-            public int NumeroScali { get; set; }
-            public double? Temperatura { get; set; }
-            public string? DescrizioneMeteo { get; set; }
-
-            public bool ConsigliatoDaGemini { get; set; }
-        }
-
-        private class DestinazioneArea
-        {
-            public string Citta { get; set; } = "";
-            public string Aeroporto { get; set; } = "";
-        }
+        
     }
 }
