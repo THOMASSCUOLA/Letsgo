@@ -197,6 +197,14 @@
                             <div class="saved-date">
                                 Salvata il @destinazione.DataSalvataggio.ToString("dd/MM/yyyy HH:mm")
                             </div>
+                           
+                            <div class="mt-3 text-end">
+                                <form method="post" asp-page-handler="Elimina" asp-route-id="@destinazione.Id">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Sei sicuro di voler eliminare questa destinazione?');">
+                                        <i class="bi bi-trash"></i> Elimina
+                                    </button>
+                                </form>
+                            </div>
 
                         </div>
                     </div>

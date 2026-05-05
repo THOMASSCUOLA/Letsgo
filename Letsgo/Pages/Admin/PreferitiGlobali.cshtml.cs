@@ -20,5 +20,20 @@ namespace Letsgo.Pages.Admin
         {
             Destinazioni = await _context.DestinazioniSalvate.OrderByDescending(a => a.DataSalvataggio).ToListAsync();
         }
+        public async Task<IActionResult> OnPostEliminaAsync(int id)
+        {
+            // L'Admin non ha bisogno di controllare l'IdUtente. Cerca solo l'ID del viaggio.
+            var destinazione = await _context.DestinazioniSalvate.FindAsync(id);
+
+            if (destinazione != null)
+            {
+                _context.DestinazioniSalvate.Remove(destinazione);
+                await _context.SaveChangesAsync();
+
+                TempData["MessaggioSuccesso"] = "Destinazione eliminata definitivamente dal database globale.";
+            }
+
+            return RedirectToPage();
+        }
     }
 }

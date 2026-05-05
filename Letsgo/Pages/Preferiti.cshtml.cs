@@ -37,5 +37,29 @@ namespace Letsgo.Pages
                     .ToListAsync();
             }
         }
+        public async Task<IActionResult> OnPostEliminaAsync(int id)
+        {
+            // Prendo l'ID dell'utente loggato
+            var idUtente = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(idUtente))
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+
+            // Cerco la destinazione nel database (assicurandomi che sia dell'utente corretto)
+            var destinazione = await _context.DestinazioniSalvate
+                .FirstOrDefaultAsync(d => d.Id == id && d.IdUtente == idUtente);
+
+            // Se esiste, la cancello
+            if (destinazione != null)
+            {
+                _context.DestinazioniSalvate.Remove(destinazione);
+                await _context.SaveChangesAsync();
+
+                TempData["MessaggioSuccesso"] = "Destinazione eliminata con successo.";
+            }
+
+            // Ricarico la pagina per mostrare la lista aggiornata
+            return RedirectToPage();
+        }
     }
 }
